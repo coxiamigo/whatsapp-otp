@@ -2,8 +2,13 @@ const qrcode = require('qrcode-terminal');
 const { Client, LocalAuth } = require('whatsapp-web.js');
 const express = require('express');
 const bodyParser = require('body-parser');
+const cors = require('cors'); // ✅ أضفنا CORS
+
 const app = express();
 const port = process.env.PORT || 10000;
+
+app.use(cors()); // ✅ تفعيل CORS لكل origins
+app.use(bodyParser.json());
 
 function generateOTP() {
     return Math.floor(100000 + Math.random() * 900000).toString();
@@ -27,8 +32,6 @@ client.on('ready', () => {
 });
 
 client.initialize();
-
-app.use(bodyParser.json());
 
 app.post('/send-otp', async (req, res) => {
     const { phone } = req.body;
