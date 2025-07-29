@@ -1,4 +1,4 @@
-const qrcode = require('qrcode-terminal');
+const qrcode = require('qrcode');
 const { Client, LocalAuth } = require('whatsapp-web.js');
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -9,6 +9,8 @@ const port = process.env.PORT || 10000;
 
 app.use(cors());
 app.use(bodyParser.json());
+
+let currentQR = null; // لتخزين آخر QR جاهز
 
 function generateOTP() {
   return Math.floor(100000 + Math.random() * 900000).toString();
@@ -23,8 +25,8 @@ const client = new Client({
 });
 
 client.on('qr', (qr) => {
-  qrcode.generate(qr, { small: true });
-  console.log('📱 امسح QR من واتساب');
+  currentQR = qr;
+  console.log('📱 QR جاهز على /qr');
 });
 
 client.on('ready', () => {
@@ -40,6 +42,24 @@ client.on('disconnected', (reason) => {
 });
 
 client.initialize();
+
+app.get('/qr', async (req, res) => {
+  if (!currentQR) {
+    return res.send("⏳ بانتظار توليد QR...");
+  }
+
+  try {
+    const qrImage = await qrcode.toDataURL(currentQR);
+    res.send(`
+      <html><body style="display:flex;justify-content:center;align-items:center;height:100vh;flex-direction:column">
+        <h2>امسح الكود لتسجيل الدخول</h2>
+        <img src="${qrImage}" style="width:300px;height:300px" />
+      </body></html>
+    `);
+  } catch (err) {
+    res.status(500).send("❌ خطأ أثناء توليد QR");
+  }
+});
 
 app.post('/send-otp', async (req, res) => {
   const { phone } = req.body;
@@ -60,7 +80,7 @@ app.post('/send-otp', async (req, res) => {
 
     await client.sendMessage(formattedPhone, message);
     console.log(`✅ OTP sent to ${phone}`);
-    console.log(`🔐 OTP Code: ${otp}`);  // ✅ هون الكود بينطبع بالكونسول
+    console.log(`🔐 OTP Code: ${otp}`);
     res.send({ status: 'success', otp });
   } catch (err) {
     console.error('❌ فشل الإرسال:', err);
@@ -73,5 +93,5 @@ app.get('/', (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`🚀 السيرفر شغّال عالبورت ${port}`);
+  console.log(`🚀 السيرفر شغّال على البورت ${port}`);
 });
