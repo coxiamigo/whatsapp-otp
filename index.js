@@ -98,6 +98,6 @@ app.get('/', (req, res) => {
   res.send("✅ WhatsApp OTP Server is running");
 });
 
-app.listen(port, () => {
+app.listen(port, '0.0.0.0', () => {
   console.log(`🚀 السيرفر شغّال على البورت ${port}`);
 });
