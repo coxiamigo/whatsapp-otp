@@ -28,12 +28,18 @@ client.on('ready', () => {
   console.log('✅ WhatsApp جاهز!');
 });
 
+// ✅ بدء الاتصال
 client.initialize();
 
 // ✅ إعداد Express API
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+// ✅ Route افتراضي للـ /
+app.get('/', (req, res) => {
+  res.send('✅ WhatsApp OTP API is running.');
+});
 
 // ✅ Endpoint لإرسال OTP
 app.post('/send-otp', async (req, res) => {
@@ -51,8 +57,8 @@ app.post('/send-otp', async (req, res) => {
   }
 });
 
-// ✅ شغل السيرفر على البورت 10000
+// ✅ شغل السيرفر على البورت 10000 على كل الشبكات
 const PORT = 10000;
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 السيرفر شغّال على البورت ${PORT}`);
 });
