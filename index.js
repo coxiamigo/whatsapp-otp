@@ -31,7 +31,7 @@ client.on('qr', (qr) => {
       console.error('❌ فشل توليد QR:', err);
       return;
     }
-    console.log('✅ افتح هالرابط لسكان QR:\n', `http://your-vps-ip:10000/qr`);
+    console.log('✅ افتح هالرابط لسكان QR:\n', `http://41.253.126.246:10000/qr`);
   });
 });
 
