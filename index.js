@@ -26,7 +26,13 @@ const client = new Client({
 
 client.on('qr', (qr) => {
   currentQR = qr;
-  console.log('📱 QR جاهز على /qr');
+  qrcode.toDataURL(qr, (err, url) => {
+    if (err) {
+      console.error('❌ فشل توليد QR:', err);
+      return;
+    }
+    console.log('✅ افتح هالرابط لسكان QR:\n', `http://your-vps-ip:10000/qr`);
+  });
 });
 
 client.on('ready', () => {
